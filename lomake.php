@@ -3,13 +3,16 @@ require_once "public_text.php";
 
 $lomake_valid;
 
+$julkaisu = new Public_text();
+
 if(isset($_POST['ready'])) {
   //print_r($_POST);
-  $julkaisu = new Public_text($_POST);
+$julkaisu->posti($_POST);
+
   print_r($julkaisu->getvalidError());
   $lomake_valid = $julkaisu->getvalidError();
 } elseif (isset($_POST['cancel'])) {
-  header ( "location:  lomake.php" );
+  //header ( "location:  lomake.php" );
 	exit ();
 } else{
 
@@ -43,11 +46,8 @@ if(isset($_POST['ready'])) {
         </form>
       </div>
     </nav>
-
 <?php
-//print_r($_POST);
-
-
+var_export($julkaisu);
  ?>
 
     <div class="container">
@@ -60,11 +60,18 @@ if(isset($_POST['ready'])) {
               <div class="input-group-prepend">
                 <span class="input-group-text">Kokonimi</span>
                 <div class="input-group-text">
-                  <input type="checkbox" name="public_text_author_name_show">
+                  <input type="checkbox" name="public_text_author_name_show"
+                  <?php
+                  if(strlen ($julkaisu->getFullNameShow()) == 0) {
+                    print("true");
+                  } else {
+                    print("checked");
+                  }
+                   ?> >
                 </div>
               </div>
-              <input type="text" class="form-control" name="public_text_author_name_first" value="<?PHP echo $julkaisu->getFirstName()?>" placeholder="Etunimi" />
-              <input type="text" class="form-control" name="public_text_author_name_last" placeholder="Sukunimi" />
+              <input type="text" class="form-control" name="public_text_author_name_first"  placeholder="Etunimi" value="<?php print(htmlentities($julkaisu->getFirstName(), ENT_QUOTES, "UTF-8")); ?>" />
+              <input type="text" class="form-control" name="public_text_author_name_last" placeholder="Sukunimi" value="<?php print(htmlentities($julkaisu->getLastName(), ENT_QUOTES, "UTF-8")); ?>" />
             </div>
             <?php
               if(isset($lomake_valid['public_text_author_name_first'])){
@@ -75,80 +82,172 @@ if(isset($_POST['ready'])) {
                 echo '</div>';
               }
             ?>
+            <?php
+              if(isset($lomake_valid['public_text_author_name_last'])){
+                echo '<div class="alert alert-danger" role="alert">';
+                  foreach ($lomake_valid['public_text_author_name_last'] as $key => $value) {
+                    echo $value;
+                  }
+                echo '</div>';
+              }
+            ?>
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text">Kirjoittajan taiteilija nimi</span>
                 <div class="input-group-text">
-                  <input type="checkbox" name="public_text_author_show">
+                  <input type="checkbox" name="public_text_author_show"<?php
+                  if(strlen ($julkaisu->getAuthorNameShow()) == 0) {
+                    print("true");
+                  } else {
+                    print("checked");
+                  }
+                   ?>>
                 </div>
               </div>
-              <input type="text" name="public_text_author" class="form-control" id="public_text_author"></input>
+              <input type="text" name="public_text_author" class="form-control" id="public_text_author" value="<?php print(htmlentities($julkaisu->getAuthorName(), ENT_QUOTES, "UTF-8")); ?>"></input>
             </div>
-              <div class="alert alert-danger" role="alert"></div>
+            <?php
+              if(isset($lomake_valid['public_text_author'])){
+                echo '<div class="alert alert-danger" role="alert">';
+                  foreach ($lomake_valid['public_text_author'] as $key => $value) {
+                    echo $value;
+                  }
+                echo '</div>';
+              }
+            ?>
 
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text">Kirjoittajan sähköposti</span>
                 <div class="input-group-text">
-                  <input type="checkbox" name="public_text_email_show">
+                  <input type="checkbox" name="public_text_email_show"<?php
+                  if(strlen ($julkaisu->getEmailShow()) == 0) {
+                    print("true");
+                  } else {
+                    print("checked");
+                  }
+                   ?>>
                 </div>
               </div>
-              <input type="text" name="public_text_author_email" class="form-control" id="public_text_author_email" aria-describedby="emailHelp" placeholder=""></input>
+              <input type="text" name="public_text_author_email" class="form-control" id="public_text_author_email" aria-describedby="emailHelp" placeholder="" value="<?php print(htmlentities($julkaisu->getEmail(), ENT_QUOTES, "UTF-8")); ?>"></input>
             </div>
-              <div class="alert alert-danger" role="alert"></div>
+            <?php
+              if(isset($lomake_valid['public_text_author_email'])){
+                echo '<div class="alert alert-danger" role="alert">';
+                  foreach ($lomake_valid['public_text_author_email'] as $key => $value) {
+                    echo $value;
+                  }
+                echo '</div>';
+              }
+            ?>
 
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text">Tekstin otsikko</span>
               </div>
-              <input type="text" name="public_text_header" class="form-control" id="public_text_header"></input>
+              <input type="text" name="public_text_header" class="form-control" id="public_text_header" value="<?php print(htmlentities($julkaisu->getTextHeader(), ENT_QUOTES, "UTF-8")); ?>"></input>
             </div>
-              <div class="alert alert-danger" role="alert"></div>
+            <?php
+              if(isset($lomake_valid['public_text_header'])){
+                echo '<div class="alert alert-danger" role="alert">';
+                  foreach ($lomake_valid['public_text_header'] as $key => $value) {
+                    echo $value;
+                  }
+                echo '</div>';
+              }
+            ?>
 
             <div class="form-group">
               <label for="public_text_content">Julkaistava teksti</label>
-              <textarea class="form-control" id="public_text_content" rows="3" name="public_text_content"></textarea>
+              <textarea class="form-control" id="public_text_content" rows="3" name="public_text_content"><?php print(htmlentities($julkaisu->getTextContain(), ENT_QUOTES, "UTF-8")); ?></textarea>
               <script>
           			CKEDITOR.replace( 'public_text_content' );
           		</script>
             </div>
-              <div class="alert alert-danger" role="alert"></div>
+            <?php
+              if(isset($lomake_valid['public_text_content'])){
+                echo '<div class="alert alert-danger" role="alert">';
+                  foreach ($lomake_valid['public_text_content'] as $key => $value) {
+                    echo $value;
+                  }
+                echo '</div>';
+              }
+            ?>
 
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text">Tekstin tag</span>
               </div>
-              <input type="text" name="public_text_tag" class="form-control" id="public_text_header"></input>
+              <input type="text" name="public_text_tag" class="form-control" id="public_text_header" value="<?php print(htmlentities($julkaisu->getTextTag(), ENT_QUOTES, "UTF-8")); ?>"></input>
             </div>
-              <div class="alert alert-danger" role="alert"></div>
+            <?php
+              if(isset($lomake_valid['public_text_tag'])){
+                echo '<div class="alert alert-danger" role="alert">';
+                  foreach ($lomake_valid['public_text_tag'] as $key => $value) {
+                    echo $value;
+                  }
+                echo '</div>';
+              }
+            ?>
 
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text">Tekstin katoamis päivä</span>
               </div>
-              <input type="date" name="public_text_date_end" class="form-control" id="public_text_date_end"></input>
+              <input type="date" name="public_text_date_end" class="form-control" id="public_text_date_end" value="<?php print(htmlentities($julkaisu->getTextEndDate(), ENT_QUOTES, "UTF-8")); ?>"></input>
             </div>
-              <div class="alert alert-danger" role="alert"></div>
+            <?php
+              if(isset($lomake_valid['public_text_date_end'])){
+                echo '<div class="alert alert-danger" role="alert">';
+                  foreach ($lomake_valid['public_text_date_end'] as $key => $value) {
+                    echo $value;
+                  }
+                echo '</div>';
+              }
+            ?>
 
             <div class="input-group mb-3">
               <div class="input-group-prepend">
                 <span class="input-group-text">Kielit joilla julkaistava teksti on kirjoitettu</span>
               </div>
-              <input type="text" name="public_text_language" class="form-control" id="public_text_language"></input>
+              <input type="text" name="public_text_language" class="form-control" id="public_text_language" value="<?php print(htmlentities($julkaisu->getTextLanguage(), ENT_QUOTES, "UTF-8")); ?>"></input>
             </div>
-              <div class="alert alert-danger" role="alert"></div>
+            <?php
+              if(isset($lomake_valid['public_text_language'])){
+                echo '<div class="alert alert-danger" role="alert">';
+                  foreach ($lomake_valid['public_text_language'] as $key => $value) {
+                    echo $value;
+                  }
+                echo '</div>';
+              }
+            ?>
 
 
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
                   <span class="input-group-text">hyväksyn julkaisu ehdot</span>
                   <div class="input-group-text">
-                    <input type="checkbox" name="public_text_agreed">
+                    <input type="checkbox" name="public_text_agreed"
+                    <?php
+                    if(strlen ($julkaisu->getSystemTermsAccepted()) == 0) {
+                      print("true");
+                    } else {
+                      print("checked");
+                    }
+                     ?> >
                   </div>
                 </div>
                     <input class="form-control" type="text" placeholder="Hyväksymällä ehdot on ainostaan oikeellisuus julkaisuun." readonly>
               </div>
-                <div class="alert alert-danger" role="alert"></div>
+              <?php
+                if(isset($lomake_valid['public_text_agreed'])){
+                  echo '<div class="alert alert-danger" role="alert">';
+                    foreach ($lomake_valid['public_text_agreed'] as $key => $value) {
+                      echo $value;
+                    }
+                  echo '</div>';
+                }
+              ?>
 
 
               <input  type="submit" name="ready" value="send" class="btn btn-outline-primary" />
