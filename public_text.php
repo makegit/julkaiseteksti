@@ -40,7 +40,9 @@ class Public_text {
     $this->systemTermsAccepted;
     */
 
-  function __construct($allPost){
+    function __construct(){}
+
+  function posti($allPost){
     //print_r($allPost);if(isset($allPost['']))
 
     if(isset($allPost['public_text_author_name_first'])){
@@ -137,20 +139,26 @@ class Public_text {
 
   // setter, getter and checker to varitable firstName
   public function setFirstName($firstName) {
-    $this->firstName = trim ( $firstName );
+    $this->firstName = trim ( mb_convert_case ( $firstName, MB_CASE_TITLE, "UTF-8" ) );
   }
 
   public function getFirstName() {
     return $this->firstName;
   }
 
-  public function checkFirstName($firstName = "", $required = true, $min = 3, $max = 50) {
+  public function checkFirstName($firstName = "", $required = true, $pattern = "/[^a-zåäöA-ZÅÄÖ\- ]/", $min = 3, $max = 50) {
     $error = array();
     $validfirstName = "";
 
-    if($firstName == "" && $required == true){
-      array_push($error, "Etunimi on pakollinen");
+
+    if ($required == true && strlen ( $firstName ) == 0) {
+      array_push($error, "Etunimi on pakollinen jotenka tämä ei saalla tyhjä.");
     }
+
+    if (strlen ( $firstName ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $firstName )) {
+			array_push($error, "Etunimi saa sisältää vain kirjaimia aA - öÖ.");
+		}
 
     if(!empty($error))
     $this->validError['public_text_author_name_first'] = $error;
@@ -164,16 +172,29 @@ class Public_text {
 
   // setter, getter and checker to varitable lastName
   public function setLastName($lastName) {
-    $this->lastName = trim ( $lastName );
+    $this->lastName = trim ( mb_convert_case ( $lastName, MB_CASE_TITLE, "UTF-8" ) );
   }
 
   public function getLastName() {
     return $this->lastName;
   }
 
-  public function checkLastName($lastName = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['lastName'] = "false";
+  public function checkLastName($lastName = "", $required = true, $pattern = "/[^a-zåäöA-ZÅÄÖ\- ]/", $min = 3, $max = 50) {
+    $error = array();
+
     $validlastName = "";
+
+    if ($required == true && strlen ( $lastName ) == 0) {
+      array_push($error, "Sukunimi on pakollinen jotenka tämä ei saalla tyhjä.");
+    }
+
+    if (strlen ( $lastName ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $lastName )) {
+			array_push($error, "Sukunimi saa sisältää vain kirjaimia aA - öÖ.");
+		}
+
+    if(!empty($error))
+    $this->validError['public_text_author_name_last'] = $error;
 
     $validlastName = $lastName;
     //if($this->validError['']) {}
@@ -190,9 +211,22 @@ class Public_text {
   return $this->fullNameShow;
   }
 
-  public function checkFullNameShow($fullNameShow = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['fullNameShow'] = "false";
+  public function checkFullNameShow($fullNameShow = "", $required = false, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
+
     $validfullNameShow = "";
+
+    if ($fullNameShow == true && strlen ( $fullNameShow ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $fullNameShow ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $fullNameShow )) {
+			array_push($error, "");
+		}
+
+    if(!empty($error))
+    $this->validError['fullNameShow'] = $error;
 
     $validfullNameShow = $fullNameShow;
     //if($this->validError['']) {}
@@ -209,9 +243,22 @@ class Public_text {
     return $this->authorName;
   }
 
-  public function checkAuthorName($authorName = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['authorName'] = "false";
+  public function checkAuthorName($authorName = "", $required = false, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
+
     $validauthorName = "";
+
+    if ($authorName == true && strlen ( $authorName ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $authorName ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $authorName )) {
+			array_push($error, "");
+		}
+
+    if(!empty($error))
+    $this->validError['authorName'] = $error;
 
     $validauthorName = $authorName;
     //if($this->validError['']) {}
@@ -228,9 +275,22 @@ class Public_text {
     return $this->authorNameShow;
   }
 
-  public function checkAuthorNameShow($authorNameShow = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['authorNameShow'] = "false";
+  public function checkAuthorNameShow($authorNameShow = "", $required = false, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
+
     $validauthorNameShow = "";
+
+    if ($authorNameShow == true && strlen ( $authorNameShow ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $authorNameShow ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $authorNameShow )) {
+			array_push($error, "");
+		}
+
+    if(!empty($error))
+    $this->validError['authorNameShow'] = $error;
 
     $validauthorNameShow = $authorNameShow;
     //if($this->validError['']) {}
@@ -247,9 +307,22 @@ class Public_text {
     return $this->email;
   }
 
-  public function checkEmail($email = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['email'] = "false";
+  public function checkEmail($email = "", $required = true, $pattern = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i", $min = 3, $max = 50) {
+    $error = array();
+
     $validemail = "";
+
+    if ($email == true && strlen ( $email ) == 0) {
+      array_push($error, "Sähköpostiosoite on pakollinen.");
+    }
+
+    if (strlen ( $email ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $email )) {
+			array_push($error, "Sähköpostiosoite muoto on virheellinen.");
+		}
+
+    if(!empty($error))
+    $this->validError['email'] = $error;
 
     $validemail = $email;
     //if($this->validError['']) {}
@@ -266,9 +339,22 @@ class Public_text {
     return $this->emailShow;
   }
 
-  public function checkEmailShow($emailShow = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['emailShow'] = "false";
+  public function checkEmailShow($emailShow = "", $required = false, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
+
     $validemailShow = "";
+
+    if ($emailShow == true && strlen ( $emailShow ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $emailShow ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $emailShow )) {
+			array_push($error, "");
+		}
+
+    if(!empty($error))
+    $this->validError['emailShow'] = $error;
 
     $validemailShow = $emailShow;
     //if($this->validError['']) {}
@@ -285,9 +371,22 @@ class Public_text {
   return $this->textHeader;
   }
 
-  public function checkTextHeader($textHeader = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['textHeader'] = "false";
+  public function checkTextHeader($textHeader = "", $required = true, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
+
     $validtextHeader = "";
+
+    if ($textHeader == true && strlen ( $textHeader ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $textHeader ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $textHeader )) {
+			array_push($error, "");
+		}
+
+    if(!empty($error))
+    $this->validError['textHeader'] = $error;
 
     $validtextHeader = $textHeader;
     //if($this->validError['']) {}
@@ -304,9 +403,23 @@ class Public_text {
     return $this->textContain;
   }
 
-  public function checkTextContain($textContain = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['textContain'] = "false";
+  public function checkTextContain($textContain = "", $required = true, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
+
     $validtextContain = "";
+
+    if ($textContain == true && strlen ( $textContain ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $textContain ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $textContain )) {
+      array_push($error, "");
+    }
+
+
+    if(!empty($error))
+    $this->validError['textContain'] = $error;
 
     $validtextContain = $textContain;
     //if($this->validError['']) {}
@@ -323,9 +436,21 @@ class Public_text {
     return $this->textTag;
   }
 
-  public function checkTextTag($textTag = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['textTag'] = "false";
+  public function checkTextTag($textTag = "", $required = false, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
     $validtextTag = "";
+
+    if ($textTag == true && strlen ( $textTag ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $textTag ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $textTag )) {
+      array_push($error, "");
+    }
+
+    if(!empty($error))
+    $this->validError['textTag'] = $error;
 
     $validtextTag = $textTag;
     //if($this->validError['']) {}
@@ -342,9 +467,21 @@ class Public_text {
     return $this->textEndDate;
   }
 
-  public function checkTextEndDate($textEndDate = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['textEndDate'] = "false";
+  public function checkTextEndDate($textEndDate = "", $required = true, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
     $validtextEndDate = "";
+
+    if ($textEndDate == true && strlen ( $textEndDate ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $textEndDate ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $textEndDate )) {
+      array_push($error, "");
+    }
+
+    if(!empty($error))
+    $this->validError['textEndDate'] = $error;
 
     $validtextEndDate = $textEndDate;
     //if($this->validError['']) {}
@@ -361,9 +498,21 @@ class Public_text {
     return $this->textLanguage;
   }
 
-  public function checkTextLanguage($textLanguage = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['textLanguage'] = "false";
+  public function checkTextLanguage($textLanguage = "", $required = true, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
     $validtextLanguage = "";
+
+    if ($textLanguage == true && strlen ( $textLanguage ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $textLanguage ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $textLanguage )) {
+      array_push($error, "");
+    }
+
+    if(!empty($error))
+    $this->validError['textLanguage'] = $error;
 
     $validtextLanguage = $textLanguage;
     //if($this->validError['']) {}
@@ -380,9 +529,21 @@ class Public_text {
     return $this->systemTermsAccepted;
   }
 
-  public function checkSystemTermsAccepted($systemTermsAccepted = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['systemTermsAccepted'] = "false";
+  public function checkSystemTermsAccepted($systemTermsAccepted = "", $required = true, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
     $validsystemTermsAccepted = "";
+
+    if ($systemTermsAccepted == true && strlen ( $systemTermsAccepted ) == 0) {
+      array_push($error, "");
+    }
+
+    if (strlen ( $systemTermsAccepted ) > 0 && strlen ( $pattern ) > 0 )
+    if (preg_match ( $pattern, $systemTermsAccepted )) {
+      array_push($error, "");
+    }
+
+    if(!empty($error))
+    $this->validError['systemTermsAccepted'] = $error;
 
     $validsystemTermsAccepted = $systemTermsAccepted;
     //if($this->validError['']) {}
@@ -399,10 +560,12 @@ class Public_text {
     return $this->id;
   }
 
-  public function checkId($id = "", $required = true, $min = 3, $max = 50) {
-    $this->validError['id'] = "false";
+  public function checkId($id = "", $required = true, $pattern = "", $min = 3, $max = 50) {
+    $error = array();
     $validid = "";
 
+    if(!empty($error))
+    $this->validError['id'] = $error;
     $validid = $id;
     //if($this->validError['']) {}
     return $validid;
